@@ -5,7 +5,7 @@ export class UserEntity implements user{
     name: string;
     phone: string;
     gender: string;
-    username: string;
+   username: string;
     password: string;
     role: $Enums.Role;
     refreshToken: string;

@@ -34,15 +34,15 @@ export class UserController {
     }
   }
 
-  @Post('/create')
-  async create(@Body(ValidationPipe) body: CreateUserDto): Promise<UserInterface> {
-    const User = await this.userService.createUser(body);
-    return {
-      data: User,
-      message: 'Create Successfully',
-      statusCode: 201
-    }
-  }
+  // @Post('/create')
+  // async create(@Body(ValidationPipe) body: CreateUserDto): Promise<UserInterface> {
+  //   const User = await this.userService.createUser(body);
+  //   return {
+  //     data: User,
+  //     message: 'Create Successfully',
+  //     statusCode: 201
+  //   }
+  // }
 
   @Patch('/:id')
   update(@Param('id') id: string, @Body() body: UpdateUserDto) {

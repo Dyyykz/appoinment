@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe } from '@nestjs/common';
 import { AppoinmentService } from './appoinment.service';
 import { appoinmentDto } from './dto/appoinment.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AppoinmentInterface } from 'src/interface/response';
 
 @ApiTags('appoinment')
@@ -10,7 +10,7 @@ export class AppoinmentController {
   constructor(private readonly appoinmentService: AppoinmentService) { }
 
   @Get('find/:id')
-  async findAppoinmentById(@Param(':id') id: string): Promise<AppoinmentInterface> {
+  async findAppoinmentById(@Param(':id', ValidationPipe) id: string): Promise<AppoinmentInterface> {
     const findId = await this.appoinmentService.findAppoinmentById(id);
     return {
       data: findId,
@@ -19,15 +19,26 @@ export class AppoinmentController {
     }
   }
 
-  
-
-
-
   @Post('create')
-  async createAppoinment(@Body() data: appoinmentDto) {
+  @ApiOperation({})
+  @ApiResponse({})
+  @ApiBody({ 
+    type: appoinmentDto,
+    description: "",
+  })
+  async createAppoinment(@Body(ValidationPipe) data: appoinmentDto): Promise<AppoinmentInterface> {
     const create = await this.appoinmentService.createApppoinment(data);
     return { message: 'success', statusCode: 201, data: create };
   }
 
+  // async findAppoinmentById(@Param() id : string): Promise<AppoinmentInterface>{
+  //   const findId =  
+
+  
+
+  async cancelAppoinment(@Param(ValidationPipe) id: string): Promise<AppoinmentInterface> {
+    const cancelAppoinment = await this.appoinmentService.cancelAppoinment(id);
+    return { data: cancelAppoinment, message: 'success', statusCode: 200 }
+  }
 
 }

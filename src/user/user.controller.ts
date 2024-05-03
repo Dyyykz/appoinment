@@ -1,34 +1,63 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Res } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto, UpdateUserDto } from './user.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { user } from '@prisma/client';
+import { appendFile } from 'fs';
+import { UserInterface } from 'src/interface/response';
 
+
+@ApiTags("User")
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
-
+  //Get
+ 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  async findAll() {
+    const users = await this.userService.findAll();
+    return {
+      data: users,
+      message: "success find all",
+      statusCode: 200,
+    }
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const user = await this.userService.findId(id);
+    return {
+      data: user,
+      message: 'Success get detail',
+      statusCode: 200,
+    }
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @Post('/create')
+  async create(@Body(ValidationPipe) body: CreateUserDto): Promise<UserInterface> {
+    const User = await this.userService.createUser(body);
+    return {
+      data: User,
+      message: 'Create Successfully',
+      statusCode: 201
+    }
+  }
+
+  @Patch('/:id')
+  update(@Param('id') id: string, @Body() body: UpdateUserDto) {
+    const user = this.userService.update(id, body);
+    return {
+      data: user,
+      message: 'Update Successfully',
+      statusCode: 200
+    }
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+    return this.userService.remove(id);
   }
+
+
 }
